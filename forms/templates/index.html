@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', path = 'style.css')}}">
+    <script src="{{url_for('static', path = 'main.js')}}" defer></script>
+    <title>Form </title>
+</head>
+<body>
+    <main class="main">
+        <section class="container">
+            <div class="logo">
+                <img src= "{{url_for('static', path = 'cake-logo.png')}}" alt="">
+            </div>
+            <div class="data__input">
+                <form action="/" method="post">
+                    <div class="typing">
+                        <input id="email" type="text" name="email">
+                        <span id="span-email" >Email</span></div>
+                    <div class="typing">
+                        <input id="password" type="password" name="password">
+                        <span id="span-password">Contraseña</span></div>
+                    <div class="forgot">
+                        <a href="">¿Olvidó su Contraseña?</a>
+                    </div>
+                    <div class="btns">
+                        <button >Ingresar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+    
+</body>
+</html>
