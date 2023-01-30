@@ -20,14 +20,14 @@ driver_path = r'C:\dchrome\chromedriver.exe'
 ser = Service(driver_path)
 opt = webdriver.ChromeOptions()
 
-browser = webdriver.Chrome(service=ser, options=opt)
-browser.get('http://iinei.inei.gob.pe/microdatos/')
+driver = webdriver.Chrome(service=ser, options=opt)
+driver.get('http://iinei.inei.gob.pe/microdatos/')
 
 time.sleep(1)
 
 # CONSULTA POR ENCUESTAS
 try:
-    element = WebDriverWait(browser, 5)\
+    element = WebDriverWait(driver, 5)\
         .until(EC.element_to_be_clickable((By.XPATH, '//html/body//ul//li//a[contains(@href,"ConsultaPorEncuesta")]')))
     #print(element.text)
     #print(element)
@@ -38,7 +38,7 @@ except :
 
 # SPAN (TRIANGLE SHAPE)
 try:
-    element = WebDriverWait(browser, 5)\
+    element = WebDriverWait(driver, 5)\
         .until(EC.element_to_be_clickable((By.XPATH, '//span[contains(@class, "arrow")]')))
     element.click()
 except:
@@ -47,7 +47,7 @@ except:
 # SELECT ENAHO METODOLOGÍAS ACTUALIZA
 
 try:
-    element = WebDriverWait(browser, 5)\
+    element = WebDriverWait(driver, 5)\
         .until(EC.element_to_be_clickable((By.XPATH, '/html/body/span/span/span[2]/ul/li[3]')))
     element.click()
 except:
@@ -55,7 +55,7 @@ except:
 
 # SPAN (TRIANGLE SHAPE) TO SELECT IF ENAHO OR ENAHO PANEL
 try:
-    element = WebDriverWait(browser, 5)\
+    element = WebDriverWait(driver, 5)\
         .until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div/div/div[4]/div/form[1]/div[5]/div[2]/select")))
     element.click()
 
@@ -65,7 +65,7 @@ except:
 # SELECT CONDICIONES DE VIDA Y POBREZA - ENAHO
 try:
 
-    element = WebDriverWait(browser, 5)\
+    element = WebDriverWait(driver, 5)\
         .until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[2]/div/div/div[4]/div/form[1]/div[5]/div[2]/select/option[2]')))
     element.click()
 except:
@@ -83,7 +83,7 @@ for year in years:
     data_element = {}
     # AÑO
     try:
-        element = WebDriverWait(browser, 5)\
+        element = WebDriverWait(driver, 5)\
             .until(EC.element_to_be_clickable((By.XPATH, '//select[contains(@name, "cmbAnno")]')))
         element.click()
         time.sleep(1)
@@ -91,7 +91,7 @@ for year in years:
         print('AÑO1', year)
 
     try:
-        element = WebDriverWait(browser, 5)\
+        element = WebDriverWait(driver, 5)\
             .until(EC.element_to_be_clickable((By.XPATH, f'//select[contains(@name, "cmbAnno")]//option[contains(@value,"{year}")]')))
         data_element['year'] = element.text
         element.click()
@@ -101,7 +101,7 @@ for year in years:
 
     # PERIODO
     try:
-        element = WebDriverWait(browser, 5)\
+        element = WebDriverWait(driver, 5)\
             .until(EC.element_to_be_clickable((By.XPATH, '//select[contains(@name, "cmbTrimestre")]')))
         element.click()
         time.sleep(1)
@@ -109,7 +109,7 @@ for year in years:
         print('PERIODO', year)
     try:
 
-        element = WebDriverWait(browser, 5)\
+        element = WebDriverWait(driver, 5)\
             .until(EC.element_to_be_clickable((By.XPATH, '//select[contains(@name,"cmbTrimestre")]//option[contains(@value,"55")]')))
         data_element['periodo'] = element.text
         element.click()
@@ -119,7 +119,7 @@ for year in years:
 
     # DOWNLOAD
 
-    element = WebDriverWait(browser, 5)\
+    element = WebDriverWait(driver, 5)\
         .until(EC.element_to_be_clickable((By.XPATH, '//td//a[contains(@href, "03.zip") and contains(@href, "SPSS")]')))
     path_name_file = element.get_attribute('href')
     data_element['path_zip_inei'] = urljoin('http://iinei.inei.gob.pe/microdatos/',path_name_file )
@@ -138,7 +138,7 @@ for year in years:
     data.append(data_element)
     del element
 
-# browser.quit()
+# driver.quit()
 
 
 
