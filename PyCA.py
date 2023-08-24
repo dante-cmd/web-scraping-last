@@ -48,7 +48,7 @@ main(to_email='dante.toribio@unmsm.edu.pe',
      password='4249245+Dtc',
      subject='With love, from ME to You',
      text='''Hola Dante
-     Muchas gracias por haber participado en nuestro proceseo pero continuamos
+     Muchas gracias por haber participado en nuestro proceso pero continuamos
      con otro''')
 
 # -------------------------------------------------------

@@ -4,11 +4,8 @@
 
 # Selenium 3.0 offers three important tools, Selenium WebDriver, Selenium Server, and
 # Selenium IDE.
-import selenium
-
-print(selenium.__version__)
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -16,129 +13,83 @@ import time
 from pathlib import Path
 from urllib.parse import urljoin
 
-driver_path = r'C:\dchrome\chromedriver.exe'
-ser = Service(driver_path)
-opt = webdriver.ChromeOptions()
 
-driver = webdriver.Chrome(service=ser, options=opt)
-driver.get('http://iinei.inei.gob.pe/microdatos/')
+class GetDataINEI:
+    def __init__(self):
+        driver_path = r'C:\dmozilla\geckodriver.exe'
+        ser = Service(driver_path)
+        opt = webdriver.FirefoxOptions()
+        self.driver = webdriver.Firefox(service=ser, options=opt)
+    
+    def goToINEI(self):
+        self.driver.get('https://iinei.inei.gob.pe/microdatos/')
 
-time.sleep(1)
+    def clickOnElement(self, method, param):
+        try:
+            element = WebDriverWait(self.driver, 5)\
+                .until(lambda d:d.find_element(method, param))
+            element.click()
+            return True
 
-# CONSULTA POR ENCUESTAS
-try:
-    element = WebDriverWait(driver, 5)\
-        .until(EC.element_to_be_clickable((By.XPATH, '//html/body//ul//li//a[contains(@href,"ConsultaPorEncuesta")]')))
-    #print(element.text)
-    #print(element)
-    element.click()
-except :
-    print('Consulta por encuesta')
+        except Exception as e:
+            print(e.args)
+            return False
+    
+    def goToRange(self):
+        # => Click on Consulta Por Encuesta
+        self.clickOnElement(By.XPATH, '//ul[@id="jsmenu"]//li//a[contains(@href,"ConsultaPorEncuesta")]')
+        # => Click On options
+        self.clickOnElement(By.XPATH,'//span[contains(@class, "arrow")]')
+        # => 
+        self.clickOnElement(
+            By.XPATH,
+            '//ul[@class="select2-results__options"]//li[3]')
+        
+        self.clickOnElement(
+            By.NAME,
+            'cmbEncuestaN')
+        self.clickOnElement(
+            By.XPATH, "//select[@name='cmbEncuestaN']//option[@value='Condiciones de Vida y Pobreza - ENAHO']"
+        )
 
+    def isDownloaded(self):
+        
+        path_download = Path('C:/Users/LENOVO/Downloads')
+        while list(path_download.glob('*Modulo03*.zip.part')):
+            print('sleep 5 seconds')
+            time.sleep(5)
+        
+        return True
+        # '279-Modulo03.qg1gB-tn.zip.part'
 
-# SPAN (TRIANGLE SHAPE)
-try:
-    element = WebDriverWait(driver, 5)\
-        .until(EC.element_to_be_clickable((By.XPATH, '//span[contains(@class, "arrow")]')))
-    element.click()
-except:
-    print('SPAN (TRIANGLE SHAPE)')
+    def dowloadByYear(self, year):
+        option_year = self.clickOnElement(
+                By.XPATH, f"//select[@name='cmbAnno']//option[@value='{year}']"
+            )
+        option_period = self.clickOnElement(
+                By.XPATH, "//select[@name='cmbTrimestre']//option[@value='55']"
+            )
+        if option_period and option_year:
+            time.sleep(10)
 
-# SELECT ENAHO METODOLOGÍAS ACTUALIZA
+            self.clickOnElement(
+                    By.XPATH, '//td//a[contains(@href, "03.zip") and contains(@href, "SPSS")]'
+                )
 
-try:
-    element = WebDriverWait(driver, 5)\
-        .until(EC.element_to_be_clickable((By.XPATH, '/html/body/span/span/span[2]/ul/li[3]')))
-    element.click()
-except:
-    print('SELECT ENAHO METODOLOGÍAS ACTUALIZA')
-
-# SPAN (TRIANGLE SHAPE) TO SELECT IF ENAHO OR ENAHO PANEL
-try:
-    element = WebDriverWait(driver, 5)\
-        .until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div/div/div[4]/div/form[1]/div[5]/div[2]/select")))
-    element.click()
-
-except:
-    print('SPAN (TRIANGLE SHAPE) TO SELECT IF ENAHO OR ENAHO PANEL')
-
-# SELECT CONDICIONES DE VIDA Y POBREZA - ENAHO
-try:
-
-    element = WebDriverWait(driver, 5)\
-        .until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[2]/div/div/div[4]/div/form[1]/div[5]/div[2]/select/option[2]')))
-    element.click()
-except:
-    print(('SELECT CONDICIONES DE VIDA Y POBREZA - ENAHO'))
-
-#'/html/body/div[2]/div/div/div[4]/div/form[1]/div[5]/div[3]/div[2]/div/select/option[18]'
-#years = range(8, 10)
-
-# data_element = {}
-years = range(2010, 2021)
-
-data = []
-for year in years:
-
-    data_element = {}
-    # AÑO
-    try:
-        element = WebDriverWait(driver, 5)\
-            .until(EC.element_to_be_clickable((By.XPATH, '//select[contains(@name, "cmbAnno")]')))
-        element.click()
-        time.sleep(1)
-    except:
-        print('AÑO1', year)
-
-    try:
-        element = WebDriverWait(driver, 5)\
-            .until(EC.element_to_be_clickable((By.XPATH, f'//select[contains(@name, "cmbAnno")]//option[contains(@value,"{year}")]')))
-        data_element['year'] = element.text
-        element.click()
-        time.sleep(1)
-    except:
-        print('select Año', year)
-
-    # PERIODO
-    try:
-        element = WebDriverWait(driver, 5)\
-            .until(EC.element_to_be_clickable((By.XPATH, '//select[contains(@name, "cmbTrimestre")]')))
-        element.click()
-        time.sleep(1)
-    except:
-        print('PERIODO', year)
-    try:
-
-        element = WebDriverWait(driver, 5)\
-            .until(EC.element_to_be_clickable((By.XPATH, '//select[contains(@name,"cmbTrimestre")]//option[contains(@value,"55")]')))
-        data_element['periodo'] = element.text
-        element.click()
-        time.sleep(1)
-    except:
-        print('selct PERIODO1', year)
-
-    # DOWNLOAD
-
-    element = WebDriverWait(driver, 5)\
-        .until(EC.element_to_be_clickable((By.XPATH, '//td//a[contains(@href, "03.zip") and contains(@href, "SPSS")]')))
-    path_name_file = element.get_attribute('href')
-    data_element['path_zip_inei'] = urljoin('http://iinei.inei.gob.pe/microdatos/',path_name_file )
-
-    name_file = path_name_file.split('/')[-1]
-
-    path_inint = Path(r'C:\Users\LENOVO\Downloads')
-
-    element.click()
-
-    while not (path_inint / name_file).exists():
-        print('Espere 10 segundos')
-        time.sleep(10)
-
-    print(f'Downloaded file {name_file}')
-    data.append(data_element)
-    del element
-
-# driver.quit()
-
-
-
+    def downloadHistorical(self):
+        years = range(2010, 2022)
+        for year in years:
+            self.dowloadByYear(year)
+            if self.isDownloaded():
+                continue
+    
+    def quit(self):
+        self.driver.quit()
+        
+if __name__ == '__main__':
+    inei = GetDataINEI()
+    inei.goToINEI()
+    inei.goToRange()
+    inei.downloadHistorical()
+    inei.quit()
+    # inei.dowloadByYear(2023)
