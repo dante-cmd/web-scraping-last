@@ -1,2 +1,3 @@
 *.log
 /env/
+/web_scrape_bussiness/DataPages
